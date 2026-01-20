@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can only read/write their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Clients: agents can only access their own clients
+    match /clients/{clientId} {
+      allow read, write: if request.auth != null && 
+        (resource.data.agentId == request.auth.uid || 
+         request.resource.data.agentId == request.auth.uid);
+    }
+
+    // Listings: agents can only access their own listings
+    match /listings/{listingId} {
+      allow read, write: if request.auth != null && 
+        (resource.data.agentId == request.auth.uid || 
+         request.resource.data.agentId == request.auth.uid);
+    }
+
+    // Showings: agents can only access their own showings
+    match /showings/{showingId} {
+      allow read, write: if request.auth != null && 
+        (resource.data.agentId == request.auth.uid || 
+         request.resource.data.agentId == request.auth.uid);
+    }
+
+    // Documents: agents can only access their own documents
+    match /documents/{documentId} {
+      allow read, write: if request.auth != null && 
+        (resource.data.agentId == request.auth.uid || 
+         request.resource.data.agentId == request.auth.uid);
+    }
+  }
+}
+

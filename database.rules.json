@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "active_showings": {
+      "$agentId": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.uid == $agentId"
+      }
+    }
+  }
+}
+
