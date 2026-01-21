@@ -25,8 +25,12 @@ export const createDriveFolder = async (
   folderName: string,
   parentFolderId?: string
 ): Promise<DriveFolder> => {
-  const drive = google.drive({ version: 'v3', auth: new google.auth.OAuth2() });
-  drive.setCredentials({ access_token: accessToken });
+  //const drive = google.drive({ version: 'v3', auth: new google.auth.OAuth2() });
+  //drive.setCredentials({ access_token: accessToken });
+  const oauth2Client = new google.auth.OAuth2();
+  oauth2Client.setCredentials({ access_token: accessToken });
+  
+  const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
   const fileMetadata = {
     name: folderName,
@@ -56,8 +60,12 @@ export const uploadFileToDrive = async (
   mimeType: string,
   folderId?: string
 ): Promise<DriveFile> => {
-  const drive = google.drive({ version: 'v3', auth: new google.auth.OAuth2() });
-  drive.setCredentials({ access_token: accessToken });
+  //const drive = google.drive({ version: 'v3', auth: new google.auth.OAuth2() });
+  //drive.setCredentials({ access_token: accessToken });
+  const oauth2Client = new google.auth.OAuth2();
+  oauth2Client.setCredentials({ access_token: accessToken });
+
+  const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
   const fileMetadata = {
     name: fileName,
@@ -90,13 +98,15 @@ export const getFileDownloadUrl = async (
   accessToken: string,
   fileId: string
 ): Promise<string> => {
-  const drive = google.drive({ version: 'v3', auth: new google.auth.OAuth2() });
-  drive.setCredentials({ access_token: accessToken });
+  //const drive = google.drive({ version: 'v3', auth: new google.auth.OAuth2() });
+  //drive.setCredentials({ access_token: accessToken });
+  const oauth2Client = new google.auth.OAuth2();
+  oauth2Client.setCredentials({ access_token: accessToken });
 
-  const response = await drive.files.get({
-    fileId,
-    alt: 'media',
-  });
+  //const response = await drive.files.get({
+    //fileId,
+    //alt: 'media',
+  //});
 
   // For direct download, use the export endpoint for Google Docs or get for regular files
   return `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
