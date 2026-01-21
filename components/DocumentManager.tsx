@@ -103,6 +103,7 @@ export default function DocumentManager({ user }: DocumentManagerProps) {
 
       // Get signature as data URL
       const signatureDataUrl = signatureRef.current.toDataURL();
+      const { user } = useAuth();
 
       // For demo purposes, we'll create a simple PDF
       // In production, you'd fetch the actual PDF from Google Drive
