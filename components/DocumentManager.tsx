@@ -103,7 +103,6 @@ export default function DocumentManager({ user }: DocumentManagerProps) {
 
       // Get signature as data URL
       const signatureDataUrl = signatureRef.current.toDataURL();
-      const { user } = useAuth();
 
       // For demo purposes, we'll create a simple PDF
       // In production, you'd fetch the actual PDF from Google Drive
@@ -118,13 +117,14 @@ export default function DocumentManager({ user }: DocumentManagerProps) {
       // Upload to Google Drive via API route
       const { getAuth } = await import('firebase/auth');
       const { auth } = await import('@/lib/firebase/config');
-      const user = getAuth(auth).currentUser;
+      //const user = getAuth(auth).currentUser;
+      const firebaseUser = getAuth(auth).currentUser;
       if (!user) {
         alert('Please sign in first');
         return;
       }
       
-      const token = await user.getIdToken();
+      const token = await firebaseUser.getIdToken();
       
       // Convert Uint8Array to Blob
       const pdfBlob = new Blob([signedPdfBytes], { type: 'application/pdf' });
@@ -182,13 +182,14 @@ export default function DocumentManager({ user }: DocumentManagerProps) {
       // Get auth token
       const { getAuth } = await import('firebase/auth');
       const { auth } = await import('@/lib/firebase/config');
-      const user = getAuth(auth).currentUser;
-      if (!user) {
+      //const user = getAuth(auth).currentUser;
+      const firebaseUser = getAuth(auth).currentUser;
+      if (!firebaseUser) {
         alert('Please sign in first');
         return;
       }
       
-      const token = await user.getIdToken();
+      const token = await firebaseUser.getIdToken();
       
       // Call API route to create Drive folder
       const response = await fetch('/api/drive/create-folder', {
