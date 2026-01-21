@@ -118,8 +118,8 @@ export default function DocumentManager({ user }: DocumentManagerProps) {
       const { getAuth } = await import('firebase/auth');
       const { auth } = await import('@/lib/firebase/config');
       //const user = getAuth(auth).currentUser;
-      const firebaseUser = getAuth(auth).currentUser;
-      if (!user) {
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) {
         alert('Please sign in first');
         return;
       }
@@ -127,7 +127,7 @@ export default function DocumentManager({ user }: DocumentManagerProps) {
       const token = await firebaseUser.getIdToken();
       
       // Convert Uint8Array to Blob
-      const pdfBlob = new Blob([signedPdfBytes], { type: 'application/pdf' });
+      const pdfBlob = new Blob([signedPdfBytes as unknown as BlobPart], { type: 'application/pdf' });
       const formData = new FormData();
       formData.append('file', pdfBlob, `${selectedDocument.name}_signed.pdf`);
       formData.append('fileName', `${selectedDocument.name}_signed.pdf`);
@@ -183,7 +183,7 @@ export default function DocumentManager({ user }: DocumentManagerProps) {
       const { getAuth } = await import('firebase/auth');
       const { auth } = await import('@/lib/firebase/config');
       //const user = getAuth(auth).currentUser;
-      const firebaseUser = getAuth(auth).currentUser;
+      const firebaseUser = auth.currentUser;
       if (!firebaseUser) {
         alert('Please sign in first');
         return;
