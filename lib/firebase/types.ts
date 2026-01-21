@@ -3,8 +3,10 @@
 export interface User {
   uid: string;
   email: string;
-  displayName: string;
+  displayName?: string;
+  fullName?: string;
   photoURL?: string;
+  googleAccessToken?: string;
   googleDriveFolderId?: string;
   googleDriveFolderLink?: string;
   createdAt: Date;

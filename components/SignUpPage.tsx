@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmail, signInWithGoogle } from '@/lib/firebase/auth';
+import { signUpWithEmail, signInWithGoogle } from '@/lib/firebase/auth';
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,13 +16,14 @@ export default function LoginPage() {
     event.preventDefault();
     setLoading(true);
     setError(null);
+
     try {
-      await signInWithEmail(email, password);
+      await signUpWithEmail(email, password, fullName);
       router.push('/');
       router.refresh();
     } catch (err: any) {
-      console.error('Sign in error:', err);
-      setError(err?.message || 'Failed to sign in. Please try again.');
+      console.error('Sign up error:', err);
+      setError(err?.message || 'Failed to sign up. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -45,12 +47,24 @@ export default function LoginPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
-        <h1 className="text-3xl font-bold text-center mb-2 text-gray-800">Welcome back</h1>
-        <p className="text-center text-gray-600 mb-6">Login with email to continue.</p>
+        <h1 className="text-3xl font-bold text-center mb-2 text-gray-800">Create an account</h1>
+        <p className="text-center text-gray-600 mb-6">Sign up with email to get started.</p>
 
         {error && <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Jane Doe"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
@@ -70,6 +84,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              minLength={6}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               placeholder="••••••••"
             />
@@ -80,7 +95,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Signing in...' : 'Login'}
+            {loading ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
 
@@ -123,12 +138,12 @@ export default function LoginPage() {
         </button>
 
         <p className="text-center text-sm text-gray-600 mt-6">
-          Don&apos;t have an account?{' '}
+          Already have an account?{' '}
           <button
-            onClick={() => router.push('/signup')}
+            onClick={() => router.push('/login')}
             className="text-blue-600 hover:text-blue-700 font-semibold"
           >
-            Sign Up
+            Login
           </button>
         </p>
       </div>

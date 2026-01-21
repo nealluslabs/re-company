@@ -3,26 +3,33 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #000000;
+  --foreground: #fafafa;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@layer components {
+  .card-elevated {
+    @apply rounded-2xl border border-white/10 bg-[#050505] shadow-[0_0_0_1px_rgba(255,255,255,0.02)];
+  }
+
+  .nav-pill {
+    @apply flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors;
   }
 }
 

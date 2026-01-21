@@ -7,6 +7,7 @@ import {
   updateShowing,
 } from '@/lib/firebase/firestore';
 import { Showing } from '@/lib/firebase/types';
+import { signInWithGoogle } from '@/lib/firebase/auth';
 
 interface SchedulingProps {
   user: any;
@@ -16,6 +17,10 @@ export default function Scheduling({ user }: SchedulingProps) {
   const [showings, setShowings] = useState<Showing[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleLinked, setGoogleLinked] = useState(
+    user?.providerData?.some((provider: any) => provider.providerId === 'google.com') || false
+  );
 
   useEffect(() => {
     loadShowings();
@@ -72,6 +77,19 @@ export default function Scheduling({ user }: SchedulingProps) {
     }
   };
 
+  const handleConnectGoogle = async () => {
+    try {
+      setGoogleLoading(true);
+      await signInWithGoogle();
+      setGoogleLinked(true);
+    } catch (error: any) {
+      console.error('Error connecting Google:', error);
+      alert(error?.message || 'Failed to connect Google account.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   const handleCheckIn = async (showingId: string) => {
     try {
       await updateShowing(showingId, {
@@ -122,17 +140,27 @@ export default function Scheduling({ user }: SchedulingProps) {
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Scheduling</h2>
-          <button
-            onClick={handleSyncCalendar}
-            disabled={syncing}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-          >
-            {syncing ? 'Syncing...' : 'Sync Google Calendar'}
-          </button>
+          <div className="flex gap-3 flex-wrap">
+            <button
+              onClick={handleConnectGoogle}
+              disabled={googleLinked || googleLoading}
+              className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            >
+              {googleLinked ? 'Google Connected' : googleLoading ? 'Connecting...' : 'Connect Google'}
+            </button>
+            <button
+              onClick={handleSyncCalendar}
+              disabled={syncing}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {syncing ? 'Syncing...' : 'Sync Google Calendar'}
+            </button>
+          </div>
         </div>
 
         <p className="text-sm text-gray-600 mb-6">
-          Showings are synced from Google Calendar events containing "SHOWING" in the title.
+          Showings are synced from Google Calendar events containing "SHOWING" in the title. Connect
+          Google to enable calendar sync.
         </p>
 
         {/* Showings List */}

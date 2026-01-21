@@ -8,7 +8,7 @@ import {
   subscribeToActiveShowings,
   updateShowingLocation,
 } from '@/lib/firebase/realtime';
-import { getShowingsByAgent, updateShowing } from '@/lib/firebase/firestore';
+import { getShowingsByAgent, getUsersByIds, updateShowing } from '@/lib/firebase/firestore';
 import { Showing, ActiveShowingLocation } from '@/lib/firebase/types';
 
 interface LiveAgentTrackerProps {
@@ -31,6 +31,7 @@ export default function LiveAgentTracker({ user }: LiveAgentTrackerProps) {
   const [userShowings, setUserShowings] = useState<Showing[]>([]);
   const [selectedShowing, setSelectedShowing] = useState<string>('');
   const [watchId, setWatchId] = useState<number | null>(null);
+  const [agentNames, setAgentNames] = useState<Record<string, string>>({});
   const mapRef = useRef<any>(null);
 
   useEffect(() => {
@@ -57,13 +58,43 @@ export default function LiveAgentTracker({ user }: LiveAgentTrackerProps) {
   }, [user.uid]);
 
   useEffect(() => {
+    if (user?.uid) {
+      setAgentNames((prev) => ({
+        ...prev,
+        [user.uid]: user.displayName || user.email,
+      }));
+    }
+  }, [user.uid, user.displayName, user.email]);
+
+  useEffect(() => {
+    const loadAgentNames = async () => {
+      const agentIds = Object.values(activeShowings || {}).map((showing) => showing.agentId);
+      const missingIds = agentIds.filter((id) => id && !agentNames[id]);
+      if (missingIds.length === 0) return;
+
+      try {
+        const profiles = await getUsersByIds(missingIds);
+        const mapped: Record<string, string> = {};
+        Object.entries(profiles).forEach(([uid, profile]) => {
+          mapped[uid] = profile.fullName || profile.displayName || 'Agent';
+        });
+        setAgentNames((prev) => ({ ...prev, ...mapped }));
+      } catch (error) {
+        console.error('Error loading agent names:', error);
+      }
+    };
+
+    loadAgentNames();
+  }, [activeShowings, agentNames]);
+
+  useEffect(() => {
     if (isShowingMode && selectedShowing) {
       // Start watching position
       if (navigator.geolocation) {
         const id = navigator.geolocation.watchPosition(
           (position) => {
             const { latitude, longitude } = position.coords;
-            updateShowingLocation(user.uid, selectedShowing, latitude, longitude);
+            updateShowingLocation(selectedShowing, latitude, longitude);
           },
           (error) => {
             console.error('Geolocation error:', error);
@@ -86,7 +117,7 @@ export default function LiveAgentTracker({ user }: LiveAgentTrackerProps) {
         setWatchId(null);
       }
       if (!isShowingMode) {
-        stopShowingMode(user.uid);
+        stopShowingMode();
       }
     }
 
@@ -95,7 +126,7 @@ export default function LiveAgentTracker({ user }: LiveAgentTrackerProps) {
         navigator.geolocation.clearWatch(watchId);
       }
     };
-  }, [isShowingMode, selectedShowing, user.uid]);
+  }, [isShowingMode, selectedShowing]);
 
   const handleToggleShowingMode = async () => {
     if (!selectedShowing && !isShowingMode) {
@@ -106,7 +137,7 @@ export default function LiveAgentTracker({ user }: LiveAgentTrackerProps) {
     if (isShowingMode) {
       // Stop showing mode
       setIsShowingMode(false);
-      await stopShowingMode(user.uid);
+      await stopShowingMode();
       if (watchId !== null) {
         navigator.geolocation.clearWatch(watchId);
         setWatchId(null);
@@ -117,7 +148,7 @@ export default function LiveAgentTracker({ user }: LiveAgentTrackerProps) {
         navigator.geolocation.getCurrentPosition(
           async (position) => {
             const { latitude, longitude } = position.coords;
-            await startShowingMode(user.uid, selectedShowing, latitude, longitude);
+            await startShowingMode(selectedShowing, latitude, longitude);
             setIsShowingMode(true);
           },
           (error) => {
@@ -152,7 +183,7 @@ export default function LiveAgentTracker({ user }: LiveAgentTrackerProps) {
         checkOutTime: new Date(),
       });
       setIsShowingMode(false);
-      await stopShowingMode(user.uid);
+      await stopShowingMode();
       // Reload showings
       const showings = await getShowingsByAgent(user.uid);
       setUserShowings(showings);
@@ -163,10 +194,17 @@ export default function LiveAgentTracker({ user }: LiveAgentTrackerProps) {
   };
 
   // Convert active showings to markers
+  const getLabelForAgent = (agentId: string) => {
+    if (agentId === user.uid) {
+      return agentNames[agentId] || 'You';
+    }
+    return agentNames[agentId] || 'Agent';
+  };
+
   const markers = Object.values(activeShowings).map((showing) => ({
     id: showing.agentId,
     position: { lat: showing.latitude, lng: showing.longitude },
-    label: showing.agentId === user.uid ? 'You' : 'Agent',
+    label: getLabelForAgent(showing.agentId),
   }));
 
   return (
@@ -278,6 +316,7 @@ export default function LiveAgentTracker({ user }: LiveAgentTrackerProps) {
                   key={marker.id}
                   position={marker.position}
                   label={marker.label}
+                  title={marker.label}
                   icon={
                     marker.id === user.uid
                       ? {

@@ -1,16 +1,24 @@
-import { ref, set, onValue, off, remove, DatabaseReference } from 'firebase/database';
-import { realtimeDb } from './config';
+import { ref, set, onValue, off, remove } from 'firebase/database';
+import { auth, realtimeDb } from './config';
 import { ActiveShowingLocation } from './types';
 
 // Realtime Database paths
 const ACTIVE_SHOWINGS_PATH = 'active_showings';
 
+const requireAuthUid = (): string => {
+  const uid = auth.currentUser?.uid;
+  if (!uid) {
+    throw new Error('User not authenticated');
+  }
+  return uid;
+};
+
 export const startShowingMode = async (
-  agentId: string,
   showingId: string,
   latitude: number,
   longitude: number
 ): Promise<void> => {
+  const agentId = requireAuthUid();
   const locationRef = ref(realtimeDb, `${ACTIVE_SHOWINGS_PATH}/${agentId}`);
   await set(locationRef, {
     agentId,
@@ -22,11 +30,11 @@ export const startShowingMode = async (
 };
 
 export const updateShowingLocation = async (
-  agentId: string,
   showingId: string,
   latitude: number,
   longitude: number
 ): Promise<void> => {
+  const agentId = requireAuthUid();
   const locationRef = ref(realtimeDb, `${ACTIVE_SHOWINGS_PATH}/${agentId}`);
   await set(locationRef, {
     agentId,
@@ -37,7 +45,8 @@ export const updateShowingLocation = async (
   });
 };
 
-export const stopShowingMode = async (agentId: string): Promise<void> => {
+export const stopShowingMode = async (): Promise<void> => {
+  const agentId = requireAuthUid();
   const locationRef = ref(realtimeDb, `${ACTIVE_SHOWINGS_PATH}/${agentId}`);
   await remove(locationRef);
 };

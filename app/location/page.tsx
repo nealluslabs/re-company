@@ -1,0 +1,156 @@
+'use client';
+
+import { AppShell } from '@/components/layout/AppShell';
+import { useMemo, useState } from 'react';
+
+type LocationAgent = {
+  id: string;
+  name: string;
+  initials: string;
+  lat: number;
+  lng: number;
+  showingId: string;
+};
+
+type ShowingFilter = {
+  id: string;
+  label: string;
+};
+
+const demoShowings: ShowingFilter[] = [
+  { id: 'all', label: 'All Showings' },
+  { id: 's1', label: '2418 Maple St • 10:30' },
+  { id: 's2', label: '884 Cedar Ave • 13:00' },
+];
+
+const demoAgents: LocationAgent[] = [
+  {
+    id: 'a1',
+    name: 'You',
+    initials: 'YU',
+    lat: 37.7749,
+    lng: -122.4194,
+    showingId: 's1',
+  },
+  {
+    id: 'a2',
+    name: 'Sarah Lin',
+    initials: 'SL',
+    lat: 37.7849,
+    lng: -122.4094,
+    showingId: 's2',
+  },
+];
+
+export default function LocationPage() {
+  const [filter, setFilter] = useState<string>('all');
+  const [inviteEmail, setInviteEmail] = useState('');
+
+  const filteredAgents = useMemo(
+    () =>
+      filter === 'all'
+        ? demoAgents
+        : demoAgents.filter((agent) => agent.showingId === filter),
+    [filter],
+  );
+
+  const handleInvite = () => {
+    if (!inviteEmail) return;
+    // Placeholder: in real app, call backend to send invite for /share-location
+    console.log('Send invite to:', inviteEmail);
+    setInviteEmail('');
+  };
+
+  const hasMapsKey = !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+  return (
+    <AppShell>
+      {() => (
+        <div className="flex h-full flex-col text-white">
+          <header className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h1 className="text-lg font-semibold tracking-tight text-white">
+                Live Location
+              </h1>
+              <p className="mt-1 text-xs text-white/45">
+                Track agents in the field and share secure location links.
+              </p>
+            </div>
+            {/* Invite bar */}
+            <div className="flex w-full max-w-md items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5">
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                placeholder="Invite agent by email"
+                className="h-7 flex-1 bg-transparent text-xs text-white placeholder:text-white/35 focus:outline-none"
+              />
+              <button
+                onClick={handleInvite}
+                className="inline-flex h-7 items-center rounded-full bg-white px-3 text-[11px] font-medium text-black hover:bg-white/90"
+              >
+                Send Invite
+              </button>
+            </div>
+          </header>
+
+          {/* Filters */}
+          <div className="mb-3 flex items-center justify-between gap-3 text-xs text-white/60">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-2 py-1">
+              <span className="text-[11px] text-white/40">Showing</span>
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="bg-transparent text-xs text-white focus:outline-none"
+              >
+                {demoShowings.map((s) => (
+                  <option key={s.id} value={s.id} className="bg-black">
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <span className="text-[11px] text-white/40">
+              {filteredAgents.length} active agent{filteredAgents.length === 1 ? '' : 's'}
+            </span>
+          </div>
+
+          {/* Map area */}
+          <section className="card-elevated flex-1 overflow-hidden">
+            {hasMapsKey ? (
+              <div className="h-full w-full">
+                {/* Replace this with GoogleMap/Mapbox implementation wired to filteredAgents */}
+              </div>
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center gap-4 bg-[#050505]">
+                <div className="h-40 w-40 rounded-full border border-dashed border-white/15 bg-gradient-to-br from-white/5 to-transparent" />
+                <div className="text-center text-xs text-white/55">
+                  <p className="font-medium text-white">Map not configured</p>
+                  <p className="mt-1 text-[11px] text-white/40">
+                    Add <span className="font-mono text-[10px]">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</span>{' '}
+                    to your environment to render live agent locations.
+                  </p>
+                  <div className="mt-3 flex justify-center gap-2 text-[11px] text-white/45">
+                    {filteredAgents.map((agent) => (
+                      <span
+                        key={agent.id}
+                        className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-0.5"
+                      >
+                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white text-[9px] font-semibold text-black">
+                          {agent.initials}
+                        </span>
+                        <span>{agent.name}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </section>
+        </div>
+      )}
+    </AppShell>
+  );
+}
+
+

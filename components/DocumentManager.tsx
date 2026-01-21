@@ -11,6 +11,7 @@ import {
 import { getClientsByAgent } from '@/lib/firebase/firestore';
 import { Document, Client } from '@/lib/firebase/types';
 import ClientForm from './ClientForm';
+import { signInWithGoogle } from '@/lib/firebase/auth';
 
 interface DocumentManagerProps {
   user: any;
@@ -23,6 +24,10 @@ export default function DocumentManager({ user }: DocumentManagerProps) {
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleLinked, setGoogleLinked] = useState(
+    user?.providerData?.some((provider: any) => provider.providerId === 'google.com') || false
+  );
   const signatureRef = useRef<SignatureCanvas>(null);
 
   useEffect(() => {
@@ -41,6 +46,19 @@ export default function DocumentManager({ user }: DocumentManagerProps) {
       console.error('Error loading data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleConnectGoogle = async () => {
+    try {
+      setGoogleLoading(true);
+      await signInWithGoogle();
+      setGoogleLinked(true);
+    } catch (error: any) {
+      console.error('Error connecting Google:', error);
+      alert(error?.message || 'Failed to connect Google account.');
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -209,12 +227,21 @@ export default function DocumentManager({ user }: DocumentManagerProps) {
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Document Management</h2>
-          <button
-            onClick={handleCreateDocument}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Create Document
-          </button>
+          <div className="flex gap-3 flex-wrap">
+            <button
+              onClick={handleConnectGoogle}
+              disabled={googleLinked || googleLoading}
+              className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            >
+              {googleLinked ? 'Google Connected' : googleLoading ? 'Connecting...' : 'Connect Google'}
+            </button>
+            <button
+              onClick={handleCreateDocument}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Create Document
+            </button>
+          </div>
         </div>
 
         {/* Clients List */}

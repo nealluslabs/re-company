@@ -33,8 +33,15 @@ export const usersCollection = collection(db, 'users');
 
 export const createUser = async (userData: Omit<User, 'createdAt' | 'updatedAt'>): Promise<void> => {
   const userRef = doc(usersCollection, userData.uid);
+  // Strip out undefined fields so Firestore doesn't reject the write
+  const sanitized: Record<string, any> = {};
+  Object.entries(userData).forEach(([key, value]) => {
+    if (value !== undefined) {
+      sanitized[key] = value;
+    }
+  });
   await setDoc(userRef, {
-    ...userData,
+    ...sanitized,
     createdAt: Timestamp.now(),
     updatedAt: Timestamp.now(),
   });
@@ -53,10 +60,39 @@ export const getUser = async (uid: string): Promise<User | null> => {
   } as User;
 };
 
+export const getUsersByIds = async (uids: string[]): Promise<Record<string, User>> => {
+  const uniqueIds = Array.from(new Set(uids.filter(Boolean)));
+  if (uniqueIds.length === 0) return {};
+
+  const results: Record<string, User> = {};
+  await Promise.all(
+    uniqueIds.map(async (uid) => {
+      const userRef = doc(usersCollection, uid);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        results[uid] = {
+          ...data,
+          createdAt: timestampToDate(data.createdAt),
+          updatedAt: timestampToDate(data.updatedAt),
+        } as User;
+      }
+    })
+  );
+
+  return results;
+};
+
 export const updateUser = async (uid: string, updates: Partial<User>): Promise<void> => {
   const userRef = doc(usersCollection, uid);
+  const sanitized: Record<string, any> = {};
+  Object.entries(updates).forEach(([key, value]) => {
+    if (value !== undefined) {
+      sanitized[key] = value;
+    }
+  });
   await updateDoc(userRef, {
-    ...updates,
+    ...sanitized,
     updatedAt: Timestamp.now(),
   });
 };

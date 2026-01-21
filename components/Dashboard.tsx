@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { signOut } from '@/lib/firebase/auth';
 import { useRouter } from 'next/navigation';
 import LiveAgentTracker from './LiveAgentTracker';
@@ -15,6 +15,28 @@ interface DashboardProps {
 export default function Dashboard({ user }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<'tracker' | 'documents' | 'scheduling'>('tracker');
   const router = useRouter();
+  const [displayName, setDisplayName] = useState<string>(user.displayName || user.email);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadProfile = async () => {
+      try {
+        const { getUser } = await import('@/lib/firebase/firestore');
+        const profile = await getUser(user.uid);
+        if (mounted) {
+          setDisplayName(profile?.fullName || profile?.displayName || user.displayName || user.email);
+        }
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+      }
+    };
+
+    loadProfile();
+
+    return () => {
+      mounted = false;
+    };
+  }, [user.uid, user.displayName, user.email]);
 
   const handleSignOut = async () => {
     try {
@@ -37,11 +59,11 @@ export default function Dashboard({ user }: DashboardProps) {
                 {user.photoURL && (
                   <img
                     src={user.photoURL}
-                    alt={user.displayName || 'User'}
+                    alt={displayName || 'User'}
                     className="w-8 h-8 rounded-full"
                   />
                 )}
-                <span className="text-sm text-gray-700">{user.displayName || user.email}</span>
+                <span className="text-sm text-gray-700">{displayName}</span>
               </div>
               <button
                 onClick={handleSignOut}
