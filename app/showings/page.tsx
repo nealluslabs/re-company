@@ -45,10 +45,10 @@ export default function ShowingsPage() {
   return (
     <AppShell>
       {() => (
-        <div className="flex h-full flex-col text-white">
+        <div className="flex h-full flex-col text-black">
           <header className="mb-4 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <h1 className="text-lg font-semibold tracking-tight text-white">
+              <h1 className="text-lg font-semibold tracking-tight text-black">
                 Showings
               </h1>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-white/60">
@@ -59,7 +59,7 @@ export default function ShowingsPage() {
                   Month
                 </button>
                 <button
-                  className="rounded-full bg-white px-2 py-0.5 text-xs text-black"
+                  className="rounded-full bg-black px-2 py-0.5 text-xs text-white"
                   onClick={() => setView('week')}
                 >
                   Week
@@ -72,11 +72,11 @@ export default function ShowingsPage() {
                 </button>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-xs text-white/60">
-              <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-white/5 hover:bg-white hover:text-black">
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-black hover:text-white">
                 <ChevronLeft className="h-3.5 w-3.5" />
               </button>
-              <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-white/5 hover:bg-white hover:text-black">
+              <button className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 bg-white hover:bg-black hover:text-white">
                 <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -84,8 +84,8 @@ export default function ShowingsPage() {
 
           <section className="card-elevated flex-1 overflow-hidden">
             {/* Calendar header row (hours) */}
-            <div className="flex border-b border-white/10 text-[11px] text-white/40">
-              <div className="w-16 border-r border-white/10 px-2 py-2">Time</div>
+            <div className="flex border-b border-gray-200 text-[11px] text-gray-500">
+              <div className="w-16 border-r border-gray-200 px-2 py-2">Time</div>
               <div className="flex-1 px-2 py-2">Today</div>
             </div>
 
@@ -100,19 +100,19 @@ export default function ShowingsPage() {
                 return (
                   <div
                     key={label}
-                    className="flex border-b border-white/5"
+                    className="flex border-b border-gray-200"
                     onClick={() => openNewShowingModal(label)}
                   >
-                    <div className="w-16 border-r border-white/10 px-2 py-3 text-[11px] text-white/40">
+                    <div className="w-16 border-r border-gray-200 px-2 py-3 text-[11px] text-gray-500">
                       {label}
                     </div>
                     <div className="relative flex-1 px-2 py-2">
                       {hasEvent && (
-                        <div className="rounded-lg border border-sky-400/40 bg-sky-500/10 px-2 py-1.5 text-[11px] text-sky-100">
-                          <p className="text-[11px] font-medium text-sky-50">
+                        <div className="rounded-lg border border-sky-500/30 bg-sky-50 px-2 py-1.5 text-[11px] text-sky-800">
+                          <p className="text-[11px] font-medium text-sky-900">
                             {hasEvent.title}
                           </p>
-                          <p className="text-[10px] text-sky-100/80">
+                          <p className="text-[10px] text-sky-800">
                             {hasEvent.time} • {hasEvent.address}
                           </p>
                         </div>

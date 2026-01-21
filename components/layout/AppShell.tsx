@@ -68,16 +68,16 @@ export function AppShell({ children }: AppShellProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-black text-white">
+    <div className="flex min-h-screen bg-white text-black">
       {/* Sidebar */}
-      <aside className="flex w-64 flex-col border-r border-white/10 bg-[#050505]/95 backdrop-blur">
-        <div className="flex h-16 items-center gap-2 border-b border-white/10 px-5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-xs font-semibold tracking-tight">
+      <aside className="flex w-64 flex-col border-r border-gray-200 bg-gray-50/80 backdrop-blur">
+        <div className="flex h-16 items-center gap-2 border-b border-gray-200 px-5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-xs font-semibold tracking-tight text-black">
             RE
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold tracking-tight">AgentOS</span>
-            <span className="text-[11px] text-white/40">Real Estate Control Center</span>
+            <span className="text-sm font-semibold tracking-tight text-black">AgentOS</span>
+            <span className="text-[11px] text-gray-500">Real Estate Control Center</span>
           </div>
         </div>
 
@@ -91,8 +91,8 @@ export function AppShell({ children }: AppShellProps) {
                 href={item.href}
                 className={`nav-pill ${
                   active
-                    ? 'bg-white text-black'
-                    : 'text-white/60 hover:bg-white/5 hover:text-white'
+                    ? 'bg-black text-white'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-black'
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -102,10 +102,10 @@ export function AppShell({ children }: AppShellProps) {
           })}
         </nav>
 
-        <div className="border-t border-white/10 px-4 py-4 text-xs text-white/50">
+        <div className="border-t border-gray-200 px-4 py-4 text-xs text-gray-600">
           <div className="mb-2 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-[11px] font-medium uppercase">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-200 text-[11px] font-medium uppercase text-black">
                 {user.displayName
                   ? user.displayName
                       .split(' ')
@@ -115,25 +115,25 @@ export function AppShell({ children }: AppShellProps) {
                   : user.email?.[0]?.toUpperCase() ?? '?'}
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-medium">
+                <span className="text-xs font-medium text-black">
                   {user.displayName || user.email?.split('@')[0]}
                 </span>
-                <span className="text-[10px] text-white/40">
+                <span className="text-[10px] text-gray-500">
                   {user.email}
                 </span>
               </div>
             </div>
             <button
               onClick={handleSignOut}
-              className="inline-flex h-7 items-center gap-1 rounded-full border border-white/10 px-2 text-[11px] text-white/60 hover:bg-white hover:text-black"
+              className="inline-flex h-7 items-center gap-1 rounded-full border border-gray-300 px-2 text-[11px] text-black hover:bg-black hover:text-white"
             >
               <LogOut className="h-3 w-3" />
               <span>Sign out</span>
             </button>
           </div>
-          <div className="flex items-center justify-between pt-1 text-[10px] text-white/35">
+          <div className="flex items-center justify-between pt-1 text-[10px] text-gray-500">
             <span>Workspace</span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5">
+            <span className="rounded-full border border-gray-300 bg-white px-2 py-0.5 text-gray-700">
               Pro
             </span>
           </div>
@@ -141,7 +141,7 @@ export function AppShell({ children }: AppShellProps) {
       </aside>
 
       {/* Main content */}
-      <main className="flex min-h-screen flex-1 flex-col bg-black">
+      <main className="flex min-h-screen flex-1 flex-col bg-white">
         <div className="flex-1 px-6 pb-8 pt-6 lg:px-10 lg:pt-8">
           {children(user)}
         </div>

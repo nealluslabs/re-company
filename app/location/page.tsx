@@ -66,28 +66,28 @@ export default function LocationPage() {
   return (
     <AppShell>
       {() => (
-        <div className="flex h-full flex-col text-white">
+        <div className="flex h-full flex-col text-black">
           <header className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-lg font-semibold tracking-tight text-white">
+              <h1 className="text-lg font-semibold tracking-tight text-black">
                 Live Location
               </h1>
-              <p className="mt-1 text-xs text-white/45">
+              <p className="mt-1 text-xs text-gray-500">
                 Track agents in the field and share secure location links.
               </p>
             </div>
             {/* Invite bar */}
-            <div className="flex w-full max-w-md items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5">
+            <div className="flex w-full max-w-md items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1.5">
               <input
                 type="email"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 placeholder="Invite agent by email"
-                className="h-7 flex-1 bg-transparent text-xs text-white placeholder:text-white/35 focus:outline-none"
+                className="h-7 flex-1 bg-transparent text-xs text-black placeholder:text-gray-400 focus:outline-none"
               />
               <button
                 onClick={handleInvite}
-                className="inline-flex h-7 items-center rounded-full bg-white px-3 text-[11px] font-medium text-black hover:bg-white/90"
+                className="inline-flex h-7 items-center rounded-full bg-black px-3 text-[11px] font-medium text-white hover:bg-black/90"
               >
                 Send Invite
               </button>
@@ -95,13 +95,13 @@ export default function LocationPage() {
           </header>
 
           {/* Filters */}
-          <div className="mb-3 flex items-center justify-between gap-3 text-xs text-white/60">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-2 py-1">
-              <span className="text-[11px] text-white/40">Showing</span>
+          <div className="mb-3 flex items-center justify-between gap-3 text-xs text-gray-600">
+            <div className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-2 py-1">
+              <span className="text-[11px] text-gray-500">Showing</span>
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="bg-transparent text-xs text-white focus:outline-none"
+                className="bg-transparent text-xs text-black focus:outline-none"
               >
                 {demoShowings.map((s) => (
                   <option key={s.id} value={s.id} className="bg-black">
@@ -110,7 +110,7 @@ export default function LocationPage() {
                 ))}
               </select>
             </div>
-            <span className="text-[11px] text-white/40">
+            <span className="text-[11px] text-gray-500">
               {filteredAgents.length} active agent{filteredAgents.length === 1 ? '' : 's'}
             </span>
           </div>
@@ -122,19 +122,19 @@ export default function LocationPage() {
                 {/* Replace this with GoogleMap/Mapbox implementation wired to filteredAgents */}
               </div>
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-4 bg-[#050505]">
-                <div className="h-40 w-40 rounded-full border border-dashed border-white/15 bg-gradient-to-br from-white/5 to-transparent" />
-                <div className="text-center text-xs text-white/55">
-                  <p className="font-medium text-white">Map not configured</p>
-                  <p className="mt-1 text-[11px] text-white/40">
-                    Add <span className="font-mono text-[10px]">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</span>{' '}
+              <div className="flex h-full flex-col items-center justify-center gap-4 bg-white">
+                <div className="h-40 w-40 rounded-full border border-dashed border-gray-300 bg-gradient-to-br from-gray-100 to-transparent" />
+                <div className="text-center text-xs text-gray-600">
+                  <p className="font-medium text-black">Map not configured</p>
+                  <p className="mt-1 text-[11px] text-gray-500">
+                    Add <span className="font-mono text-[10px] text-black">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</span>{' '}
                     to your environment to render live agent locations.
                   </p>
-                  <div className="mt-3 flex justify-center gap-2 text-[11px] text-white/45">
+                  <div className="mt-3 flex justify-center gap-2 text-[11px] text-gray-600">
                     {filteredAgents.map((agent) => (
                       <span
                         key={agent.id}
-                        className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-0.5"
+                        className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-gray-100 px-2 py-0.5"
                       >
                         <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white text-[9px] font-semibold text-black">
                           {agent.initials}
