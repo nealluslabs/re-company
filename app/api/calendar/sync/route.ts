@@ -1,3 +1,4 @@
+export const runtime = 'nodejs'; // Forces Vercel to use the full Node.js environment
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase-admin';
 import { fetchShowingEvents, calendarEventToShowing } from '@/lib/google/calendar';
