@@ -19,8 +19,20 @@ export const fetchShowingEvents = async (
   timeMin?: Date,
   timeMax?: Date
 ): Promise<CalendarEvent[]> => {
-  const calendar = google.calendar({ version: 'v3', auth: new google.auth.OAuth2() });
-  calendar.setCredentials({ access_token: accessToken });
+  //const calendar = google.calendar({ version: 'v3', auth: new google.auth.OAuth2() });
+  //calendar.setCredentials({ access_token: accessToken });
+  
+  // 1. Create the OAuth2 client first
+  const oauth2Client = new google.auth.OAuth2();
+  
+  // 2. Set the credentials on the AUTH client
+  oauth2Client.setCredentials({ access_token: accessToken });
+
+  // 3. Initialize the calendar and pass the oauth2Client as the 'auth' property
+  const calendar = google.calendar({ 
+    version: 'v3', 
+    auth: oauth2Client // Pass the client here
+  });
 
   const response = await calendar.events.list({
     calendarId: 'primary',
