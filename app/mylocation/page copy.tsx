@@ -1,8 +1,7 @@
 'use client';
 
-// 1. ADD Suspense TO THE IMPORT
-import { Suspense, useMemo } from 'react'; 
 import { AppShell } from '@/components/layout/AppShell';
+import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 type LocationAgent = {
@@ -15,12 +14,25 @@ type LocationAgent = {
 };
 
 const demoAgents: LocationAgent[] = [
-  { id: 'a1', name: 'You', initials: 'YU', lat: 37.7749, lng: -122.4194, showingId: 's1' },
-  { id: 'a2', name: 'Sarah Lin', initials: 'SL', lat: 37.7849, lng: -122.4094, showingId: 's2' },
+  {
+    id: 'a1',
+    name: 'You',
+    initials: 'YU',
+    lat: 37.7749,
+    lng: -122.4194,
+    showingId: 's1',
+  },
+  {
+    id: 'a2',
+    name: 'Sarah Lin',
+    initials: 'SL',
+    lat: 37.7849,
+    lng: -122.4094,
+    showingId: 's2',
+  },
 ];
 
-// 2. CREATE A CONTENT COMPONENT TO HOLD THE HOOKS
-function MyLocationContent() {
+export default function MyLocationPage() {
   const searchParams = useSearchParams();
   const showingId = searchParams?.get('showing') || searchParams?.get('s') || '';
 
@@ -51,9 +63,12 @@ function MyLocationContent() {
             </div>
           </header>
 
+          {/* Map area (no invite, no dropdown) */}
           <section className="card-elevated flex-1 overflow-hidden">
             {hasMapsKey ? (
-              <div className="h-full w-full"></div>
+              <div className="h-full w-full">
+                {/* TODO: Replace with real map (GoogleMap/Mapbox) wired to filteredAgents */}
+              </div>
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-4 bg-white">
                 <div className="h-40 w-40 rounded-full border border-dashed border-gray-300 bg-gradient-to-br from-gray-100 to-transparent" />
@@ -77,14 +92,5 @@ function MyLocationContent() {
         </div>
       )}
     </AppShell>
-  );
-}
-
-// 3. UPDATE THE DEFAULT EXPORT TO WRAP IN SUSPENSE
-export default function MyLocationPage() {
-  return (
-    <Suspense fallback={<div className="p-8 text-center text-sm">Loading map view...</div>}>
-      <MyLocationContent />
-    </Suspense>
   );
 }
