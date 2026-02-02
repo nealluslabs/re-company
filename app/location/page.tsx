@@ -1,7 +1,8 @@
 'use client';
 
 import { AppShell } from '@/components/layout/AppShell';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react'; // Added useEffect
+//import { useMemo, useState } from 'react';
 
 type LocationAgent = {
   id: string;
@@ -45,6 +46,22 @@ const demoAgents: LocationAgent[] = [
 export default function LocationPage() {
   const [filter, setFilter] = useState<string>('all');
   const [inviteEmail, setInviteEmail] = useState('');
+  const [realTimeData, setRealTimeData] = useState(null); // State for proxy data
+
+// The Proxy Call
+useEffect(() => {
+  const fetchAgentData = async () => {
+    try {
+      const response = await fetch('/api/google-proxy'); // Calling your backend route
+      const data = await response.json();
+      setRealTimeData(data);
+    } catch (error) {
+      console.error("Failed to fetch location data via proxy", error);
+    }
+  };
+
+  fetchAgentData();
+}, []);
 
   const filteredAgents = useMemo(
     () =>
