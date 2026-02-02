@@ -75,7 +75,7 @@ export const calendarEventToShowing = (
   agentId: string,
   listingId?: string,
   clientId?: string
-): Omit<Showing, 'id' | 'createdAt' | 'updatedAt'> => {
+): Omit<Showing, 'id' | 'createdAt' | 'updatedAt'|'address' > => { // feb 2 2026 - I omitted address
   return {
     agentId,
     listingId,
