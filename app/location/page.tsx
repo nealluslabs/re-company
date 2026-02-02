@@ -3,8 +3,8 @@
 import { AppShell } from '@/components/layout/AppShell';
 import { getShowings } from '@/lib/firebase/firestore';
 import { Showing } from '@/lib/firebase/types';
-import { useMemo, useState, useEffect } from 'react'; // Added useEffect
-//import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
 import { useRouter } from 'next/navigation';
 
 
