@@ -1,8 +1,12 @@
 'use client';
 
 import { AppShell } from '@/components/layout/AppShell';
+import { getShowings } from '@/lib/firebase/firestore';
+import { Showing } from '@/lib/firebase/types';
 import { useMemo, useState, useEffect } from 'react'; // Added useEffect
 //import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 
 type LocationAgent = {
   id: string;
@@ -18,7 +22,7 @@ type ShowingFilter = {
   label: string;
 };
 
-const demoShowings: ShowingFilter[] = [
+let demoShowings: ShowingFilter[] = [
   { id: 'all', label: 'All Showings' },
   { id: 's1', label: '2418 Maple St • 10:30' },
   { id: 's2', label: '884 Cedar Ave • 13:00' },
@@ -44,9 +48,14 @@ const demoAgents: LocationAgent[] = [
 ];
 
 export default function LocationPage() {
+  const router = useRouter();
+
   const [filter, setFilter] = useState<string>('all');
+  const [chosenShowing, setChosenShowing] = useState<string>('all');
+
   const [inviteEmail, setInviteEmail] = useState('');
   const [realTimeData, setRealTimeData] = useState(null); // State for proxy data
+  const [allShowings,setAllShowings] = useState<Showing[]>([])
 
 // The Proxy Call
 useEffect(() => {
@@ -63,6 +72,33 @@ useEffect(() => {
   fetchAgentData();
 }, []);
 
+
+useEffect(() => {
+  // Load user's showings
+  const loadShowings = async () => {
+    try {
+      const showings = await getShowings();
+      setAllShowings(showings);
+    } catch (error) {
+      console.error('Error loading showings:', error);
+    }
+  };
+
+  loadShowings();
+
+ // // Subscribe to active showings
+ // const unsubscribe = subscribeToActiveShowings((showings) => {
+ //   setActiveShowings(showings);
+ // });
+//
+ // return () => {
+ //   unsubscribe();
+ // };
+}, [ ]);
+
+
+
+
   const filteredAgents = useMemo(
     () =>
       filter === 'all'
@@ -71,10 +107,25 @@ useEffect(() => {
     [filter],
   );
 
+ 
+
   const handleInvite = () => {
     if (!inviteEmail) return;
     // Placeholder: in real app, call backend to send invite for /share-location
     console.log('Send invite to:', inviteEmail);
+    
+
+    //chat gpt put code here -START
+   console.log("ALL SHOWINGS =====>",allShowings)
+
+   console.log("CHOSEN SHOWINGS =====>",chosenShowing)
+
+ /* if (chosenShowing && chosenShowing !== 'all') {*/
+    router.push(`/mylocation?showing=${encodeURIComponent(chosenShowing)}`);
+  /*}*/
+
+   //chat gpt put code here - END
+
     setInviteEmail('');
   };
 
@@ -103,8 +154,11 @@ useEffect(() => {
                 className="h-7 flex-1 bg-transparent text-xs text-black placeholder:text-gray-400 focus:outline-none"
               />
               <button
+              type='button'
                 onClick={handleInvite}
-                className="inline-flex h-7 items-center rounded-full bg-black px-3 text-[11px] font-medium text-white hover:bg-black/90"
+                className=" inline-flex h-7 items-center rounded-full bg-black px-3 text-[11px] font-medium text-white hover:bg-black/90"
+                
+
               >
                 Send Invite
               </button>
@@ -116,13 +170,15 @@ useEffect(() => {
             <div className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-2 py-1">
               <span className="text-[11px] text-gray-500">Showing</span>
               <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="bg-transparent text-xs text-black focus:outline-none"
+                value={chosenShowing}
+                onChange={(e) => setChosenShowing(e.target.value)}
+                className="bg-white text-xs text-black focus:outline-none"
+                
               >
-                {demoShowings.map((s) => (
-                  <option key={s.id} value={s.id} className="bg-black">
-                    {s.label}
+                
+                {allShowings.map((s) => (
+                  <option key={s.id} value={s.address} className="bg-white">
+                    {s.address}
                   </option>
                 ))}
               </select>

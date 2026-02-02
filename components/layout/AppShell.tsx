@@ -25,7 +25,7 @@ const navItems = [
   { href: '/vault', label: 'Vault', icon: FolderKanban },
   { href: '/showings', label: 'Showings', icon: CalendarDays },
   { href: '/location', label: 'Location', icon: MapPin },
-  { href: '/clients', label: 'Clients', icon: Users },
+  { href: '/clients', label: 'Contacts', icon: Users },
 ];
 
 export function AppShell({ children }: AppShellProps) {
