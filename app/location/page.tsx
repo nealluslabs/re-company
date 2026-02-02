@@ -1,9 +1,10 @@
 'use client';
 
 import { AppShell } from '@/components/layout/AppShell';
-import { useMemo, useState, useEffect } from 'react'; // Added useEffect
-//import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
 
+// --- Types & Demo Data ---
 type LocationAgent = {
   id: string;
   name: string;
@@ -25,43 +26,30 @@ const demoShowings: ShowingFilter[] = [
 ];
 
 const demoAgents: LocationAgent[] = [
-  {
-    id: 'a1',
-    name: 'You',
-    initials: 'YU',
-    lat: 37.7749,
-    lng: -122.4194,
-    showingId: 's1',
-  },
-  {
-    id: 'a2',
-    name: 'Sarah Lin',
-    initials: 'SL',
-    lat: 37.7849,
-    lng: -122.4094,
-    showingId: 's2',
-  },
+  { id: 'a1', name: 'You', initials: 'YU', lat: 6.4281, lng: 3.4219, showingId: 's1' },
+  { id: 'a2', name: 'Sarah Lin', initials: 'SL', lat: 6.4460, lng: 3.4756, showingId: 's2' },
 ];
+
+// --- Map Constants ---
+const mapContainerStyle = {
+  width: '100%',
+  height: '100%',
+};
+
+const defaultCenter = {
+  lat: 6.4541,
+  lng: 3.4356,
+};
 
 export default function LocationPage() {
   const [filter, setFilter] = useState<string>('all');
   const [inviteEmail, setInviteEmail] = useState('');
-  const [realTimeData, setRealTimeData] = useState(null); // State for proxy data
 
-// The Proxy Call
-useEffect(() => {
-  const fetchAgentData = async () => {
-    try {
-      const response = await fetch('/api/google-proxy'); // Calling your backend route
-      const data = await response.json();
-      setRealTimeData(data);
-    } catch (error) {
-      console.error("Failed to fetch location data via proxy", error);
-    }
-  };
-
-  fetchAgentData();
-}, []);
+  // 1. Load the Google Maps Script using your Public Key
+  const { isLoaded, loadError } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+  });
 
   const filteredAgents = useMemo(
     () =>
@@ -73,12 +61,9 @@ useEffect(() => {
 
   const handleInvite = () => {
     if (!inviteEmail) return;
-    // Placeholder: in real app, call backend to send invite for /share-location
     console.log('Send invite to:', inviteEmail);
     setInviteEmail('');
   };
-
-  const hasMapsKey = !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   return (
     <AppShell>
@@ -86,14 +71,12 @@ useEffect(() => {
         <div className="flex h-full flex-col text-black">
           <header className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-lg font-semibold tracking-tight text-black">
-                Live Location
-              </h1>
+              <h1 className="text-lg font-semibold tracking-tight text-black">Live Location</h1>
               <p className="mt-1 text-xs text-gray-500">
                 Track agents in the field and share secure location links.
               </p>
             </div>
-            {/* Invite bar */}
+            
             <div className="flex w-full max-w-md items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1.5">
               <input
                 type="email"
@@ -111,7 +94,6 @@ useEffect(() => {
             </div>
           </header>
 
-          {/* Filters */}
           <div className="mb-3 flex items-center justify-between gap-3 text-xs text-gray-600">
             <div className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-2 py-1">
               <span className="text-[11px] text-gray-500">Showing</span>
@@ -121,7 +103,7 @@ useEffect(() => {
                 className="bg-transparent text-xs text-black focus:outline-none"
               >
                 {demoShowings.map((s) => (
-                  <option key={s.id} value={s.id} className="bg-black">
+                  <option key={s.id} value={s.id} className="text-black">
                     {s.label}
                   </option>
                 ))}
@@ -132,35 +114,39 @@ useEffect(() => {
             </span>
           </div>
 
-          {/* Map area */}
-          <section className="card-elevated flex-1 overflow-hidden">
-            {hasMapsKey ? (
-              <div className="h-full w-full">
-                {/* Replace this with GoogleMap/Mapbox implementation wired to filteredAgents */}
+          {/* Map Area */}
+          <section className="card-elevated flex-1 overflow-hidden relative min-h-[400px]">
+            {loadError ? (
+              <div className="flex h-full items-center justify-center bg-red-50 text-red-500">
+                Error loading maps. Check your API key.
               </div>
+            ) : isLoaded ? (
+              <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                center={defaultCenter}
+                zoom={13}
+                options={{
+                  disableDefaultUI: true, // Clean look
+                  zoomControl: true,
+                }}
+              >
+                {/* Dynamically render markers for filtered agents */}
+                {filteredAgents.map((agent) => (
+                  <MarkerF
+                    key={agent.id}
+                    position={{ lat: agent.lat, lng: agent.lng }}
+                    label={{
+                      text: agent.initials,
+                      className: "bg-white px-2 py-1 rounded shadow-sm text-[10px] font-bold"
+                    }}
+                  />
+                ))}
+              </GoogleMap>
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-4 bg-white">
-                <div className="h-40 w-40 rounded-full border border-dashed border-gray-300 bg-gradient-to-br from-gray-100 to-transparent" />
-                <div className="text-center text-xs text-gray-600">
-                  <p className="font-medium text-black">Map not configured</p>
-                  <p className="mt-1 text-[11px] text-gray-500">
-                    Add <span className="font-mono text-[10px] text-black">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</span>{' '}
-                    to your environment to render live agent locations.
-                  </p>
-                  <div className="mt-3 flex justify-center gap-2 text-[11px] text-gray-600">
-                    {filteredAgents.map((agent) => (
-                      <span
-                        key={agent.id}
-                        className="inline-flex items-center gap-1 rounded-full border border-gray-300 bg-gray-100 px-2 py-0.5"
-                      >
-                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-white text-[9px] font-semibold text-black">
-                          {agent.initials}
-                        </span>
-                        <span>{agent.name}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
+              /* This shows while the Google script is downloading */
+              <div className="flex h-full flex-col items-center justify-center gap-4 bg-gray-50">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-black border-t-transparent" />
+                <p className="text-xs text-gray-500">Loading live map...</p>
               </div>
             )}
           </section>
@@ -169,5 +155,3 @@ useEffect(() => {
     </AppShell>
   );
 }
-
-
