@@ -57,7 +57,7 @@ export default function LocationPage() {
   const [realTimeData, setRealTimeData] = useState(null); // State for proxy data
   const [allShowings,setAllShowings] = useState<Showing[]>([])
 
-// The Proxy Call
+// The Proxy Call 
 useEffect(() => {
   const fetchAgentData = async () => {
     try {
