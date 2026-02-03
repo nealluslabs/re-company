@@ -316,7 +316,7 @@ export const getDocumentsByAgent = async (agentId: string): Promise<Document[]> 
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => {
     const data = doc.data();
-    return {
+    return { 
       ...data,
       createdAt: timestampToDate(data.createdAt),
       updatedAt: timestampToDate(data.updatedAt),
