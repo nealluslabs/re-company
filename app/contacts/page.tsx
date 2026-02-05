@@ -13,25 +13,25 @@ type ClientRow = {
 const demoClients: ClientRow[] = [
   {
     id: '1',
-    name: 'Sarah Lin',
-    phone: '(415) 555-0192',
-    email: 'sarah.lin@example.com',
+    name: 'Emeka Adaku',
+    phone: '+2349035568126',
+    email: 'emeka.adaku@example.com',
   },
   {
     id: '2',
-    name: 'Acme Relocation Group',
-    phone: '(510) 555-4832',
-    email: 'hr@acmerelocation.com',
+    name: 'Timi Egbuson', 
+    phone: '+2348063779239',
+    email: 'timiegbuson@acmerelocation.com',
   },
   {
     id: '3',
-    name: 'Daniel Park',
-    phone: '(650) 555-2024',
-    email: 'daniel.park@example.com',
+    name: 'Ikem Anyaoku',
+    phone: '+2348183763331',
+    email: 'ikem.anyaoku@example.com',
   },
 ];
 
-export default function ClientsPage() {
+export default function ContactsPage() {
   return (
     <AppShell>
       {() => (
@@ -39,10 +39,10 @@ export default function ClientsPage() {
           <header className="mb-4 flex items-center justify-between gap-3">
             <div>
               <h1 className="text-lg font-semibold tracking-tight text-black">
-                Clients
+                Contacts
               </h1>
               <p className="mt-1 text-xs text-gray-500">
-                CRM view of your active buyers, sellers, and relocation partners.
+                Agent List of your active buyers, sellers, and relocation partners.
               </p>
             </div>
           </header>
@@ -50,7 +50,7 @@ export default function ClientsPage() {
           <section className="card-elevated flex-1 overflow-hidden">
             <div className="border-b border-gray-200 px-4 py-2 text-[11px] text-gray-500">
               <div className="grid grid-cols-[minmax(0,2fr)_140px_minmax(0,2fr)_80px] gap-3">
-                <span>Client Name</span>
+                <span>Contact Name</span>
                 <span>Phone</span>
                 <span>Email</span>
                 <span className="text-right">Actions</span>

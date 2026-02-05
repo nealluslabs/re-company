@@ -6,8 +6,8 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Clients: agents can only access their own clients
-    match /clients/{clientId} {
+    // Clients: agents can only access their own contacts
+    match /contacts/{contactId} {
       allow read, write: if request.auth != null && 
         (resource.data.agentId == request.auth.uid || 
          request.resource.data.agentId == request.auth.uid);
