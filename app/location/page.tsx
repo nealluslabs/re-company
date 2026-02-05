@@ -51,7 +51,7 @@ export default function LocationPage() {
   const router = useRouter();
 
   const [filter, setFilter] = useState<string>('all');
-  const [chosenShowing, setChosenShowing] = useState<string>('all');
+  const [chosenShowing, setChosenShowing] = useState<string>('');
 
   const [inviteEmail, setInviteEmail] = useState('');
   const [realTimeData, setRealTimeData] = useState(null); // State for proxy data
@@ -78,13 +78,20 @@ useEffect(() => {
   const loadShowings = async () => {
     try {
       const showings = await getShowings();
-      setAllShowings(showings);
+  
+      const showingsWithAgents = showings.map((showing, index) => ({
+        ...showing,
+        agentId: index % 2 === 0 ? 's1' : 's2',
+      }));
+  
+      setAllShowings(showingsWithAgents);
     } catch (error) {
       console.error('Error loading showings:', error);
     }
   };
-
+  
   loadShowings();
+  
 
  // // Subscribe to active showings
  // const unsubscribe = subscribeToActiveShowings((showings) => {
@@ -110,7 +117,10 @@ useEffect(() => {
  
 
   const handleInvite = () => {
-    if (!inviteEmail) return;
+    if (!chosenShowing){
+      window.alert("Please Select a showing first!")
+      return;
+    }
     // Placeholder: in real app, call backend to send invite for /share-location
     console.log('Send invite to:', inviteEmail);
     
@@ -120,9 +130,9 @@ useEffect(() => {
 
    console.log("CHOSEN SHOWINGS =====>",chosenShowing)
 
- /* if (chosenShowing && chosenShowing !== 'all') {*/
+ if (chosenShowing && chosenShowing !== 'all') {
     router.push(`/mylocation?showing=${encodeURIComponent(chosenShowing)}`);
-  /*}*/
+  }
 
    //chat gpt put code here - END
 
@@ -177,7 +187,7 @@ useEffect(() => {
               >
                 
                 {allShowings.map((s) => (
-                  <option key={s.id} value={s.address} className="bg-white">
+                  <option key={s.id} value={s.id} className="bg-white">
                     {s.address}
                   </option>
                 ))}

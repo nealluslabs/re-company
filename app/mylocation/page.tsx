@@ -1,9 +1,11 @@
 'use client';
 
-import { Suspense, useMemo } from 'react'; 
+import { Suspense, useEffect, useMemo, useState } from 'react'; 
 import { AppShell } from '@/components/layout/AppShell';
 import { useSearchParams } from 'next/navigation';
 import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api';
+import { getShowing } from '@/lib/firebase/firestore';
+import { Showing } from '@/lib/firebase/types';
 
 // --- Types & Demo Data ---
 type LocationAgent = {
@@ -20,6 +22,19 @@ const demoAgents: LocationAgent[] = [
   { id: 'a2', name: 'Sarah Lin', initials: 'SL', lat: 6.4460, lng: 3.4756, showingId: 's2' },
 ];
 
+type ShowingFilter = {
+  id: string;
+  label: string;
+};
+
+let demoShowings: ShowingFilter[] = [
+  { id: 'all', label: 'All Showings' },
+  { id: 's1', label: '2418 Maple St • 10:30' },
+  { id: 's2', label: '884 Cedar Ave • 13:00' },
+];
+
+
+
 // --- Map Styling Constants ---
 const mapContainerStyle = {
   width: '100%',
@@ -35,6 +50,8 @@ function MyLocationContent() {
   const searchParams = useSearchParams();
   const showingId = searchParams?.get('showing') || searchParams?.get('s') || '';
 
+  const [chosenShowing,setChosenShowing] = useState<Showing>()
+
   // 1. Initialize the Google Maps loader
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
@@ -45,6 +62,32 @@ function MyLocationContent() {
     () => (showingId ? demoAgents.filter((a) => a.showingId === showingId) : demoAgents),
     [showingId],
   );
+
+
+
+  const filteredShowings = useMemo(
+    () => (showingId ? demoShowings.filter((a) => a.id === showingId) : demoShowings),
+    [showingId],
+  );
+
+  useEffect(()=>{
+
+    const loadShowing = async () => {
+      try {
+        const showingFound = await getShowing(showingId);
+    
+       if(showingFound){//so i cant set it outright based on the type, I have to check if it exists first
+        setChosenShowing(showingFound);
+       }
+
+      } catch (error) {
+        console.error('Error loading showings:', error);
+      }
+    };
+    
+    loadShowing();
+
+  },[showingId])
 
   return (
     <AppShell>
@@ -58,10 +101,10 @@ function MyLocationContent() {
               </p>
             </div>
             <div className="text-xs text-gray-500">
-              {showingId ? (
-                <span>Showing: <span className="font-mono text-[11px] text-black">{showingId}</span></span>
+              {chosenShowing ? (
+                <span>Showing: <span className="font-mono text-[11px] text-black">{chosenShowing && chosenShowing.address}</span></span>
               ) : (
-                <span className="text-red-500 font-medium text-[11px]">No showing specified in the URL</span>
+                <span className="text-black-500 font-medium text-[11px]">Loading...{/*No showing specified in the URL*/}</span>
               )}
             </div>
           </header>
@@ -74,7 +117,7 @@ function MyLocationContent() {
             ) : isLoaded ? (
               <GoogleMap
                 mapContainerStyle={mapContainerStyle}
-                center={filteredAgents[0] ? { lat: filteredAgents[0].lat, lng: filteredAgents[0].lng } : defaultCenter}
+                center={/*filteredAgents[0] ? { lat: filteredAgents[0].lat, lng: filteredAgents[0].lng } :*/ defaultCenter}
                 zoom={14}
                 options={{
                   disableDefaultUI: true,
