@@ -1,4 +1,5 @@
 // pages/new-showing.tsx
+'use client';
 import React, { useState } from "react";
 import { collection, addDoc, getDocs, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
