@@ -202,6 +202,37 @@ export const createShowing = async (showingData: Omit<Showing, 'id' | 'createdAt
   return showingId;
 };
 
+
+
+export const getShowings = async (): Promise<Showing[]> => {
+  const snapshot = await getDocs(showingsCollection);
+
+  if (snapshot.empty) return [];
+
+  return snapshot.docs.map((docSnap) => {
+    const data = docSnap.data();
+
+    return {
+      id: docSnap.id, // include id if your Showing type expects it
+      ...data,
+     
+     // startTime: timestampToDate(data.startTime),
+     // endTime: timestampToDate(data.endTime),
+     // checkInTime: data.checkInTime
+     //   ? timestampToDate(data.checkInTime)
+     //   : undefined,
+     // checkOutTime: data.checkOutTime
+     //   ? timestampToDate(data.checkOutTime)
+     //   : undefined,
+     // createdAt: timestampToDate(data.createdAt),
+     // updatedAt: timestampToDate(data.updatedAt),
+    } as Showing;
+  });
+};
+
+
+
+
 export const getShowing = async (showingId: string): Promise<Showing | null> => {
   const showingRef = doc(showingsCollection, showingId);
   const showingSnap = await getDoc(showingRef);
@@ -285,7 +316,7 @@ export const getDocumentsByAgent = async (agentId: string): Promise<Document[]> 
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => {
     const data = doc.data();
-    return {
+    return { 
       ...data,
       createdAt: timestampToDate(data.createdAt),
       updatedAt: timestampToDate(data.updatedAt),
