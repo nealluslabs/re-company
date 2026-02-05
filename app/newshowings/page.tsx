@@ -1,5 +1,6 @@
 // pages/new-showing.tsx
 'use client';
+import { AppShell } from '@/components/layout/AppShell';
 import React, { useState } from "react";
 import { collection, addDoc, getDocs, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
@@ -101,6 +102,20 @@ export default function NewShowingPage() {
   }
 
   return (
+
+    <AppShell>
+      {() => (
+        <div className="flex h-full flex-col text-black">
+          <header className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h1 className="text-lg font-semibold tracking-tight text-black">
+                Add Showing
+              </h1>
+              <p className="mt-1 text-xs text-gray-500">
+                Fill out the details to add new showing.
+              </p>
+            </div>
+          </header>
     <div style={{ maxWidth: 720, margin: "0 auto", padding: 20 }}>
       <h1>Add New Showing</h1>
       <form onSubmit={handleSubmit}>
@@ -200,5 +215,8 @@ export default function NewShowingPage() {
         </div>
       )}
     </div>
+    </div>
+    )}
+    </AppShell>
   );
 }
