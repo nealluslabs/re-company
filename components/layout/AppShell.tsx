@@ -14,6 +14,7 @@ import {
   Users,
   LogOut,
   Menu,
+  GitPullRequest,
   X,
 } from 'lucide-react';
 import { signOut } from '@/lib/firebase/auth';
@@ -27,6 +28,7 @@ const navItems = [
   { href: '/vault', label: 'Vault', icon: FolderKanban },
   { href: '/showings', label: 'Showings', icon: CalendarDays },
   { href: '/location', label: 'Location', icon: MapPin },
+  { href: '/requests', label: 'Requests', icon: GitPullRequest },
   { href: '/contacts', label: 'Contacts', icon: Users },
 ];
 
