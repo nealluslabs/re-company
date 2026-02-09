@@ -9,21 +9,21 @@ let adminApp: App;
 
 if (getApps().length === 0) {
   // Check if we're in a Cloud Functions environment
-  if (process.env.FIREBASE_CONFIG) {
+  if (process.env.NEXT_PUBLIC_FIREBASE_CONFIG) {
     // Cloud Functions automatically initializes Firebase Admin
     adminApp = initializeApp();
   } else {
     // For Next.js API routes, use service account
     if (
-      process.env.FIREBASE_PROJECT_ID &&
-      process.env.FIREBASE_CLIENT_EMAIL &&
-      process.env.FIREBASE_PRIVATE_KEY
+      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
+      process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL &&
+      process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY
     ) {
       adminApp = initializeApp({
         credential: cert({
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+          projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+          clientEmail: process.env.NEXT_PUBLIC_FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.NEXT_PUBLIC_FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
         }),
       });
     } else {
