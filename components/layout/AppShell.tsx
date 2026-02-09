@@ -15,9 +15,12 @@ import {
   LogOut,
   Menu,
   GitPullRequest,
+  ReceiptText,
   X,
 } from 'lucide-react';
 import { signOut } from '@/lib/firebase/auth';
+
+
 
 type AppShellProps = {
   children: (user: FirebaseUser) => React.ReactNode;
@@ -25,12 +28,26 @@ type AppShellProps = {
 
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: Home },
-  { href: '/vault', label: 'Vault', icon: FolderKanban },
+  { href: '#', label: 'Agents', icon: FolderKanban },
   { href: '/showings', label: 'Showings', icon: CalendarDays },
+  { href: '#', label: 'Invoices', icon: ReceiptText },
   { href: '/location', label: 'Location', icon: MapPin },
-  { href: '/requests', label: 'Requests', icon: GitPullRequest },
-  { href: '/contacts', label: 'Contacts', icon: Users },
+  
+  { href: '#', label: 'Settings', icon: Users },
 ];
+
+
+/*Home
+
+Agents
+
+Showings
+
+Invoices
+
+Location
+
+Settings*/
 
 export function AppShell({ children }: AppShellProps) {
   const [user, setUser] = useState<FirebaseUser | null>(null);
