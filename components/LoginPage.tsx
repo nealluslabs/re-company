@@ -13,7 +13,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setLoading(true);
+    setLoading(true); 
     setError(null);
     try {
       await signInWithEmail(email, password);
