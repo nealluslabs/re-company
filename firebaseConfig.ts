@@ -1,9 +1,11 @@
 export const firebaseConfig = {
-  apiKey: "AIzaSyCliw5VouPbFTeKyhUOs-bvbDkurKXuctw",
-  authDomain: "re-agents.firebaseapp.com",
-  projectId: "re-agents",
-  storageBucket: "re-agents.firebasestorage.app",
-  messagingSenderId: "429051696982",
-  appId: "1:429051696982:web:ea33cf07789bb19650a8f7"
+  apiKey: process.env.FIREBASE_APIKEY,
+  authDomain: process.env.FIREBASE_AUTHDOMAIN,
+  projectId: process.env.FIREBASE_PROJECTID,
+  storageBucket: process.env.FIREBASE_STORAGEBUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGINGSENDERID,
+  appId: process.env.FIREBASE_APPID
+
+
 };
 
